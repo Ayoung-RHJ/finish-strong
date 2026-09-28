@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Final Sprint 2026 – Ready</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,700;1,800;1,900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#e8323c;
+    --red-hot:#ff2b2b;
+    --black:#000;
+    --white:#fff;
+    --pill:#e4e4e4;
+    --muted:#a8a8a8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--black);color:var(--white);
+    font-family:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+    display:flex;flex-direction:column;
+    min-height:100%;
+    padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
+    user-select:none;-webkit-user-select:none;
+    overflow:hidden;
+  }
+  header{padding:9vh 24px 0;text-align:center}
+  .brand-small{font-weight:500;font-size:15px;letter-spacing:.08em;color:var(--muted)}
+  .brand{
+    font-weight:900;font-style:italic;
+    font-size:clamp(44px,15vw,76px);line-height:.88;
+    margin-top:6px;
+  }
+  .brand .yr{color:var(--red-hot);display:block}
+
+  /* red band echoes the slide's red strip */
+  .band{
+    margin:7vh 0 0;
+    background:var(--red);
+    padding:34px 24px;
+    display:flex;justify-content:center;
+  }
+  button.ready{
+    appearance:none;border:0;cursor:pointer;
+    width:min(86vw,380px);aspect-ratio:2.1/1;
+    border-radius:26px;
+    background:var(--pill);
+    color:var(--red-hot);
+    font-family:inherit;font-weight:900;font-style:italic;
+    font-size:clamp(56px,19vw,96px);letter-spacing:-.01em;
+    box-shadow:0 10px 0 #9d1c22, 0 18px 30px rgba(0,0,0,.45);
+    transform:translateY(0);
+    transition:transform .08s ease, box-shadow .08s ease, background .25s, color .25s;
+  }
+  button.ready:active{transform:translateY(8px);box-shadow:0 2px 0 #9d1c22,0 6px 14px rgba(0,0,0,.45)}
+  button.ready:focus-visible{outline:4px solid var(--white);outline-offset:6px}
+  button.ready[disabled]{cursor:default}
+  body.sending button.ready{animation:pulse .7s ease-in-out infinite}
+  body.done button.ready{
+    background:var(--black);color:var(--white);
+    box-shadow:0 0 0 4px var(--white);transform:translateY(8px);
+    font-size:clamp(40px,13vw,66px);
+  }
+  @keyframes pulse{50%{opacity:.55}}
+
+  .msg{
+    flex:1;padding:5vh 28px 32px;text-align:center;
+    font-size:21px;line-height:1.3;font-weight:500;color:#e6e6e6;
+  }
+  .msg strong{display:block;font-size:30px;font-weight:800;font-style:italic;color:var(--white);margin-bottom:6px}
+  body.error .msg strong{color:var(--red-hot)}
+
+  .burst{position:fixed;inset:0;pointer-events:none;background:var(--white);opacity:0}
+  body.done .burst{animation:burst .5s ease-out}
+  @keyframes burst{0%{opacity:.85}100%{opacity:0}}
+
+  @media (prefers-reduced-motion:reduce){
+    body.sending button.ready,body.done .burst{animation:none}
+  }
+
+  /* ---- READY ! animation ---- */
+  button.ready{position:relative;overflow:visible;display:flex;align-items:center;justify-content:center}
+  .word{display:inline-flex;align-items:baseline}
+  .word span{
+    display:inline-block;
+    background:linear-gradient(100deg,var(--red-hot) 0 38%,#ffe1e1 47%,var(--red-hot) 56% 100%);
+    background-size:300% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:wave 1.8s cubic-bezier(.3,.7,.3,1) infinite, sheen 2.4s linear infinite;
+    animation-delay:calc(var(--i) * .08s), 0s;
+    background-position-x:calc(var(--i) * -14%);
+    filter:drop-shadow(0 3px 0 rgba(157,28,34,.35));
+  }
+  .word .gap{width:.18em}
+  .word .bang{animation:bang 1.8s cubic-bezier(.3,.7,.3,1) infinite, sheen 2.4s linear infinite;animation-delay:.5s,0s}
+  @keyframes wave{0%,55%,100%{transform:translateY(0) skewX(0)}20%{transform:translateY(-12%) skewX(-8deg)}35%{transform:translateY(2%) skewX(0)}}
+  @keyframes bang{0%,50%,100%{transform:scale(1) rotate(0)}22%{transform:scale(1.35) rotate(12deg)}36%{transform:scale(.92) rotate(-4deg)}}
+  @keyframes sheen{from{background-position:100% 0}to{background-position:-200% 0}}
+
+  /* glowing ring that pulses out from the button */
+  button.ready::before,button.ready::after{
+    content:"";position:absolute;inset:-4px;border-radius:30px;pointer-events:none;
+    border:3px solid rgba(255,255,255,.85);opacity:0;
+    animation:ring 1.8s ease-out infinite;
+  }
+  button.ready::after{animation-delay:.9s}
+  @keyframes ring{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.22,1.45);opacity:0}}
+
+  /* whole button breathes */
+  body:not(.done):not(.sending) button.ready{animation:breathe 1.8s ease-in-out infinite}
+  @keyframes breathe{0%,100%{scale:1}50%{scale:1.035}}
+  body.done button.ready::before,body.done button.ready::after{display:none}
+  body.done button.ready{color:var(--white)}
+
+  @media (prefers-reduced-motion:reduce){
+    .word span,button.ready,button.ready::before,button.ready::after{animation:none !important}
+    .word span{color:var(--red-hot);background:none}
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand-small">Agency</div>
+    <h1 class="brand">FINAL SPRINT<span class="yr">2026</span></h1>
+  </header>
+
+  <div class="band">
+    <button class="ready" id="readyBtn" type="button" aria-label="READY !"><span class="word" aria-hidden="true"><span style="--i:0">R</span><span style="--i:1">E</span><span style="--i:2">A</span><span style="--i:3">D</span><span style="--i:4">Y</span><span class="gap"></span><span class="bang" style="--i:6">!</span></span></button>
+  </div>
+
+  <div class="msg" id="msg" aria-live="polite">
+    <strong>Wait for the signal</strong>
+    Tap READY! together when your leader says go.
+  </div>
+
+  <div class="burst"></div>
+
+<script>
+const btn = document.getElementById("readyBtn");
+const msg = document.getElementById("msg");
+function done(){
+  document.body.classList.add("done");
+  btn.disabled = true;
+  btn.textContent = "YOU'RE IN";
+  msg.innerHTML = "<strong>You're on the grid</strong>Eyes on the big screen.";
+}
+btn.addEventListener("click", () => {
+  if(btn.disabled) return;
+  if(navigator.vibrate) navigator.vibrate([40, 40, 80]);
+  done();
+});
+</script>
+</body>
+</html>
