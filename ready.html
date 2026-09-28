@@ -3,158 +3,156 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#000000">
-<title>Final Sprint 2026 – Ready</title>
+<meta name="theme-color" content="#2a0f24">
+<title>Finish Strong 2026 – Ready</title>
+<link rel="preload" as="image" href="assets/art.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,700;1,800;1,900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
 <style>
   :root{
-    --red:#e8323c;
-    --red-hot:#ff2b2b;
-    --black:#000;
+    --red:#e3141b;
+    --red-deep:#8e0a10;
+    --ink:#140910;
     --white:#fff;
-    --pill:#e4e4e4;
-    --muted:#a8a8a8;
+    /* art is 1170 x 2397 */
+    --ratio: 0.4881;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
-  body{
-    background:var(--black);color:var(--white);
-    font-family:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
-    display:flex;flex-direction:column;
-    min-height:100%;
-    padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);
-    -webkit-tap-highlight-color:transparent;
-    touch-action:manipulation;
-    user-select:none;-webkit-user-select:none;
-    overflow:hidden;
-  }
-  header{padding:9vh 24px 0;text-align:center}
-  .brand-small{font-weight:500;font-size:15px;letter-spacing:.08em;color:var(--muted)}
-  .brand{
-    font-weight:900;font-style:italic;
-    font-size:clamp(44px,15vw,76px);line-height:.88;
-    margin-top:6px;
-  }
-  .brand .yr{color:var(--red-hot);display:block}
+  html,body{height:100%;background:#2a0f24}
+  body{overflow:hidden;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+       user-select:none;-webkit-user-select:none;font-family:"Russo One","Arial Black",Arial,sans-serif}
 
-  /* red band echoes the slide's red strip */
-  .band{
-    margin:7vh 0 0;
-    background:var(--red);
-    padding:34px 24px;
-    display:flex;justify-content:center;
-  }
-  button.ready{
-    appearance:none;border:0;cursor:pointer;
-    width:min(86vw,380px);aspect-ratio:2.1/1;
-    border-radius:26px;
-    background:var(--pill);
-    color:var(--red-hot);
-    font-family:inherit;font-weight:900;font-style:italic;
-    font-size:clamp(56px,19vw,96px);letter-spacing:-.01em;
-    box-shadow:0 10px 0 #9d1c22, 0 18px 30px rgba(0,0,0,.45);
-    transform:translateY(0);
-    transition:transform .08s ease, box-shadow .08s ease, background .25s, color .25s;
-  }
-  button.ready:active{transform:translateY(8px);box-shadow:0 2px 0 #9d1c22,0 6px 14px rgba(0,0,0,.45)}
-  button.ready:focus-visible{outline:4px solid var(--white);outline-offset:6px}
-  button.ready[disabled]{cursor:default}
-  body.sending button.ready{animation:pulse .7s ease-in-out infinite}
-  body.done button.ready{
-    background:var(--black);color:var(--white);
-    box-shadow:0 0 0 4px var(--white);transform:translateY(8px);
-    font-size:clamp(40px,13vw,66px);
-  }
-  @keyframes pulse{50%{opacity:.55}}
+  /* blurred copy fills any side gaps on unusual screens */
+  .backdrop{position:fixed;inset:-40px;background:url(assets/art.webp) center/cover;filter:blur(24px) brightness(.6)}
 
-  .msg{
-    flex:1;padding:5vh 28px 32px;text-align:center;
-    font-size:21px;line-height:1.3;font-weight:500;color:#e6e6e6;
+  /* the artwork keeps its proportions; button & text are positioned in % of it */
+  .art{
+    position:absolute;top:0;left:50%;
+    width:max(100vw, 100vh * var(--ratio));
+    width:min(max(100vw, 100dvh * var(--ratio)), 100dvh * 0.62);
+    aspect-ratio:1170/2397;
+    transform:translateX(-50%);
+    background:url(assets/art.webp) top center/100% auto no-repeat;
   }
-  .msg strong{display:block;font-size:30px;font-weight:800;font-style:italic;color:var(--white);margin-bottom:6px}
-  body.error .msg strong{color:var(--red-hot)}
+  body.go .art{animation:rush .9s cubic-bezier(.2,.7,.2,1)}
+  @keyframes rush{0%{transform:translateX(-50%) scale(1.07);filter:brightness(1.5)}100%{transform:translateX(-50%) scale(1);filter:none}}
 
-  .burst{position:fixed;inset:0;pointer-events:none;background:var(--white);opacity:0}
-  body.done .burst{animation:burst .5s ease-out}
-  @keyframes burst{0%{opacity:.85}100%{opacity:0}}
-
-  @media (prefers-reduced-motion:reduce){
-    body.sending button.ready,body.done .burst{animation:none}
+  /* ---------- BUTTON (position from client's artwork) ---------- */
+  .btn{
+    position:absolute;left:24.89%;top:51.08%;width:48.89%;aspect-ratio:1;
+    border:0;background:none;padding:0;cursor:pointer;border-radius:50%;
+    animation:breathe 1.6s ease-in-out infinite;
   }
+  .btn:focus-visible{outline:4px solid #fff;outline-offset:6px}
+  .ring,.dome{position:absolute;display:block;pointer-events:none}
+  .ring{inset:0;width:100%;height:100%;filter:drop-shadow(0 10px 18px rgba(0,0,0,.55))}
+  .dome-wrap{position:absolute;left:16.06%;top:16.06%;width:68.03%;height:68.03%;border-radius:50%;overflow:hidden;
+    transition:transform .09s ease, filter .09s ease;
+    animation:glow 1.6s ease-in-out infinite}
+  .dome{inset:0;width:100%;height:100%}
+  /* light sweep across the red dome */
+  .dome-wrap::after{content:"";position:absolute;inset:-20%;
+    background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.55) 48%,rgba(255,255,255,.1) 54%,transparent 62%);
+    transform:translateX(-120%);animation:sweep 2.6s ease-in-out infinite}
+  /* ripples */
+  .btn::before,.btn::after{content:"";position:absolute;inset:2%;border-radius:50%;pointer-events:none;
+    border:3px solid rgba(255,255,255,.9);box-shadow:0 0 18px rgba(255,60,60,.8);opacity:0;
+    animation:ripple 2s ease-out infinite}
+  .btn::after{animation-delay:1s}
 
-  /* ---- READY ! animation ---- */
-  button.ready{position:relative;overflow:visible;display:flex;align-items:center;justify-content:center}
-  .word{display:inline-flex;align-items:baseline}
-  .word span{
-    display:inline-block;
-    background:linear-gradient(100deg,var(--red-hot) 0 38%,#ffe1e1 47%,var(--red-hot) 56% 100%);
-    background-size:300% 100%;
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    animation:wave 1.8s cubic-bezier(.3,.7,.3,1) infinite, sheen 2.4s linear infinite;
-    animation-delay:calc(var(--i) * .08s), 0s;
-    background-position-x:calc(var(--i) * -14%);
-    filter:drop-shadow(0 3px 0 rgba(157,28,34,.35));
-  }
-  .word .gap{width:.18em}
-  .word .bang{animation:bang 1.8s cubic-bezier(.3,.7,.3,1) infinite, sheen 2.4s linear infinite;animation-delay:.5s,0s}
-  @keyframes wave{0%,55%,100%{transform:translateY(0) skewX(0)}20%{transform:translateY(-12%) skewX(-8deg)}35%{transform:translateY(2%) skewX(0)}}
-  @keyframes bang{0%,50%,100%{transform:scale(1) rotate(0)}22%{transform:scale(1.35) rotate(12deg)}36%{transform:scale(.92) rotate(-4deg)}}
-  @keyframes sheen{from{background-position:100% 0}to{background-position:-200% 0}}
+  .btn.pressed .dome-wrap{transform:scale(.93);filter:brightness(.82)}
 
-  /* glowing ring that pulses out from the button */
-  button.ready::before,button.ready::after{
-    content:"";position:absolute;inset:-4px;border-radius:30px;pointer-events:none;
-    border:3px solid rgba(255,255,255,.85);opacity:0;
-    animation:ring 1.8s ease-out infinite;
-  }
-  button.ready::after{animation-delay:.9s}
-  @keyframes ring{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.22,1.45);opacity:0}}
+  @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
+  @keyframes glow{0%,100%{box-shadow:0 0 0 rgba(255,40,40,0)}50%{box-shadow:0 0 40px 6px rgba(255,40,40,.75)}}
+  @keyframes sweep{0%{transform:translateX(-120%)}55%,100%{transform:translateX(120%)}}
+  @keyframes ripple{0%{transform:scale(1);opacity:.9}100%{transform:scale(1.45);opacity:0}}
 
-  /* whole button breathes */
-  body:not(.done):not(.sending) button.ready{animation:breathe 1.8s ease-in-out infinite}
-  @keyframes breathe{0%,100%{scale:1}50%{scale:1.035}}
-  body.done button.ready::before,body.done button.ready::after{display:none}
-  body.done button.ready{color:var(--white)}
+  /* button leaves */
+  body.go .btn{animation:launch .5s cubic-bezier(.5,0,.8,.4) forwards;pointer-events:none}
+  body.go .btn::before,body.go .btn::after{display:none}
+  @keyframes launch{0%{transform:scale(.95)}35%{transform:scale(1.12);opacity:1}100%{transform:scale(.2);opacity:0}}
+
+  .shock{position:absolute;left:24.89%;top:51.08%;width:48.89%;aspect-ratio:1;border-radius:50%;
+    border:6px solid #fff;opacity:0;pointer-events:none}
+  body.go .shock{animation:shock .7s ease-out .1s}
+  @keyframes shock{0%{transform:scale(.6);opacity:1}100%{transform:scale(2.4);opacity:0;border-width:1px}}
+  .flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none}
+  body.go .flash{animation:flash .45s ease-out .12s}
+  @keyframes flash{0%{opacity:.85}100%{opacity:0}}
+
+  /* ---------- READY SCREEN ---------- */
+  .done{position:absolute;left:0;right:0;top:54%;text-align:center;pointer-events:none;visibility:hidden}
+  body.go .done{visibility:visible}
+  .done .l1,.done .l2{display:block;font-style:normal;transform:skewX(-10deg);line-height:.95;
+    color:var(--red);-webkit-text-stroke:.08em #fff;paint-order:stroke fill;
+    text-shadow:.05em .07em 0 var(--ink), .05em .07em .25em rgba(0,0,0,.6)}
+  .done .l1{font-size:min(10vw, 5.2dvh);opacity:0}
+  .done .l2{font-size:min(19vw, 9.8dvh);opacity:0}
+  .done .sub{display:inline-block;margin-top:min(4vw,2dvh);padding:.45em 1.1em;border-radius:99px;
+    background:rgba(20,9,16,.78);color:#fff;font-size:min(4.6vw,2.4dvh);letter-spacing:.04em;opacity:0}
+  body.go .done .l1{animation:slideIn .45s cubic-bezier(.2,.8,.3,1.2) .45s forwards}
+  body.go .done .l2{animation:slam .55s cubic-bezier(.2,.8,.3,1.3) .6s forwards}
+  body.go .done .sub{animation:up .5s ease-out 1.1s forwards}
+  body.go .done .l2::after{content:""}
+  @keyframes slideIn{0%{opacity:0;transform:skewX(-10deg) translateX(-60vw)}100%{opacity:1;transform:skewX(-10deg) translateX(0)}}
+  @keyframes slam{0%{opacity:0;transform:skewX(-10deg) scale(2.2)}60%{opacity:1;transform:skewX(-10deg) scale(.94)}100%{opacity:1;transform:skewX(-10deg) scale(1)}}
+  @keyframes up{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:none}}
+  /* after arriving, READY! keeps a gentle pulse */
+  body.settled .done .l2{animation:beat 1.4s ease-in-out infinite;opacity:1}
+  @keyframes beat{0%,100%{transform:skewX(-10deg) scale(1)}50%{transform:skewX(-10deg) scale(1.05)}}
+
+  /* returning visitor: show ready screen instantly */
+  body.instant .btn,body.instant .shock{display:none}
+  body.instant .done{visibility:visible}
+  body.instant .done .l1,body.instant .done .l2,body.instant .done .sub{opacity:1;animation:none}
 
   @media (prefers-reduced-motion:reduce){
-    .word span,button.ready,button.ready::before,button.ready::after{animation:none !important}
-    .word span{color:var(--red-hot);background:none}
+    .btn,.dome-wrap,.dome-wrap::after,.btn::before,.btn::after{animation:none !important}
   }
 </style>
 </head>
 <body>
-  <header>
-    <div class="brand-small">Agency</div>
-    <h1 class="brand">FINAL SPRINT<span class="yr">2026</span></h1>
-  </header>
-
-  <div class="band">
-    <button class="ready" id="readyBtn" type="button" aria-label="READY !"><span class="word" aria-hidden="true"><span style="--i:0">R</span><span style="--i:1">E</span><span style="--i:2">A</span><span style="--i:3">D</span><span style="--i:4">Y</span><span class="gap"></span><span class="bang" style="--i:6">!</span></span></button>
-  </div>
-
-  <div class="msg" id="msg" aria-live="polite">
-    <strong>Wait for the signal</strong>
-    Tap READY! together when your leader says go.
-  </div>
-
-  <div class="burst"></div>
+  <div class="backdrop" aria-hidden="true"></div>
+  <main class="art">
+    <button class="btn" id="btn" type="button" aria-label="READY">
+      <img class="ring" src="assets/ring.webp" alt="">
+      <span class="dome-wrap"><img class="dome" src="assets/dome.webp" alt=""></span>
+    </button>
+    <div class="shock" aria-hidden="true"></div>
+    <div class="done" aria-live="polite">
+      <span class="l1">YOU'RE</span>
+      <span class="l2">READY!</span>
+      <span class="sub">Eyes on the big screen</span>
+    </div>
+  </main>
+  <div class="flash" aria-hidden="true"></div>
 
 <script>
-const btn = document.getElementById("readyBtn");
-const msg = document.getElementById("msg");
-function done(){
-  document.body.classList.add("done");
-  btn.disabled = true;
-  btn.textContent = "YOU'RE IN";
-  msg.innerHTML = "<strong>You're on the grid</strong>Eyes on the big screen.";
-}
+const btn = document.getElementById("btn");
+const KEY = "fs26_ready";
+function remember(){ try{ localStorage.setItem(KEY, "1"); }catch(e){} }
+function seen(){ try{ return localStorage.getItem(KEY) === "1"; }catch(e){ return false; } }
+
+const press = () => btn.classList.add("pressed");
+const release = () => btn.classList.remove("pressed");
+btn.addEventListener("pointerdown", press);
+btn.addEventListener("pointerup", release);
+btn.addEventListener("pointerleave", release);
+btn.addEventListener("pointercancel", release);
+
 btn.addEventListener("click", () => {
-  if(btn.disabled) return;
-  if(navigator.vibrate) navigator.vibrate([40, 40, 80]);
-  done();
+  if(document.body.classList.contains("go")) return;
+  if(navigator.vibrate) navigator.vibrate([30, 40, 90]);
+  document.body.classList.add("go");
+  remember();
+  setTimeout(() => document.body.classList.add("settled"), 1300);
 });
+
+// already tapped on this phone → go straight to the ready screen
+if(seen()) document.body.classList.add("instant", "settled");
+// testing: add ?reset to the link to see the button again
+if(location.search.includes("reset")){ try{ localStorage.removeItem(KEY); }catch(e){} document.body.classList.remove("instant","settled"); }
 </script>
 </body>
 </html>
