@@ -17,8 +17,9 @@
   body.idle-mouse{cursor:none}
 
   /* ---------- STAGE: artwork always covers the screen, overlays follow it ---------- */
+  .backdrop{position:fixed;inset:-60px;background:url(assets/screen-bg.webp) center/cover;filter:blur(30px) brightness(.55)}
   .stage{position:absolute;left:50%;top:50%;
-    width:max(100vw, 100vh * 16 / 9);aspect-ratio:16/9;transform:translate(-50%,-50%);
+    width:min(100vw, 100vh * 16 / 9);aspect-ratio:16/9;transform:translate(-50%,-50%);
     container-type:size;overflow:hidden}
   .bg{position:absolute;inset:0;background:url(assets/screen-bg.webp) center/cover no-repeat;transform-origin:50% 70%}
   body.rush .bg{animation:rush 1.1s cubic-bezier(.2,.7,.2,1)}
@@ -43,16 +44,19 @@
   #tabs .start{background:#fff;color:#000;margin-left:10px}
 
   /* ---------- QR LAYER ---------- */
-  .qr-text{position:absolute;left:5cqw;top:55cqh;white-space:nowrap}
-  .qr-text .hl{font-size:6.2cqw}
-  .qr-text .hl.small{font-size:3.4cqw;margin-bottom:.6cqw}
-  .qr-text p{margin-top:2cqw;display:inline-block;background:rgba(20,9,16,.78);border-radius:99px;
-    padding:.8cqw 2cqw;font-size:1.7cqw;letter-spacing:.03em}
-  .qr-card{position:absolute;right:5cqw;top:48cqh;width:22cqw;background:#fff;border-radius:1.6cqw;padding:1.4cqw;
-    box-shadow:0 0 0 .7cqw var(--red), 0 1.5cqw 3cqw rgba(0,0,0,.5);animation:float 3s ease-in-out infinite}
+  #qr{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:3.2vmin;text-align:center;background:url(assets/qr-bg.webp) center 62%/cover no-repeat}
+  #qr::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 45% 55% at 50% 58%,rgba(10,4,10,.35),transparent 70%);pointer-events:none}
+  #qr > *{position:relative}
+  .qr-title .hl{font-size:11vmin;white-space:nowrap}
+  .qr-title .hl.small{font-size:5.6vmin;margin-bottom:.6vmin}
+  .qr-card{width:38vmin;background:#fff;border-radius:2.6vmin;padding:2.4vmin;
+    box-shadow:0 0 0 1.1vmin var(--red), 0 0 5vmin 1.5vmin rgba(255,43,43,.55), 0 2.5vmin 5vmin rgba(0,0,0,.5);
+    animation:float 3s ease-in-out infinite}
   .qr-card svg{display:block;width:100%;height:auto}
-  .qr-card .cap{color:var(--ink);text-align:center;font-size:1.4cqw;margin-top:.8cqw}
-  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.2cqh)}}
+  .qr-card .cap{color:var(--ink);font-size:2.3vmin;margin-top:1.3vmin}
+  .qr-hint{display:inline-block;background:rgba(20,9,16,.8);border-radius:99px;padding:1.3vmin 3.4vmin;font-size:2.8vmin;letter-spacing:.03em}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.2vmin)}}
 
   /* ---------- GAUGE LAYER ---------- */
   #gauge::before{content:"";position:absolute;inset:0;
@@ -122,18 +126,21 @@
   <button class="start" id="startBtn">Start 60s</button>
 </nav>
 
+<div class="backdrop" aria-hidden="true"></div>
+
+<!-- TAB 1: QR (full screen, clean track) -->
+<section class="layer on" id="qr">
+  <div class="qr-title">
+    <span class="hl small">SCAN THE QR</span>
+    <span class="hl">GET READY!</span>
+  </div>
+  <div class="qr-card"><div id="qrBox"></div><div class="cap">Open your phone camera</div></div>
+  <p class="qr-hint">Wait for the signal, then tap READY together</p>
+</section>
+
 <div class="stage">
   <div class="bg"></div>
 
-  <!-- TAB 1: QR -->
-  <section class="layer on" id="qr">
-    <div class="qr-text">
-      <span class="hl small">SCAN THE QR</span>
-      <span class="hl">GET READY!</span>
-      <p>Wait for the signal, then tap READY together</p>
-    </div>
-    <div class="qr-card"><div id="qrBox"></div><div class="cap">Open your phone camera</div></div>
-  </section>
 
   <!-- TAB 2: GAUGE -->
   <section class="layer" id="gauge">
