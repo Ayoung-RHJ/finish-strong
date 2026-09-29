@@ -76,6 +76,24 @@
   #gauge.done .tick{stroke:#fff;filter:drop-shadow(0 0 1.4px #fff)}
   #gauge.done .rt-loading{visibility:hidden}
 
+  /* ---------- COUNTDOWN 5..1, GO! ---------- */
+  .cd{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;visibility:hidden}
+  #gauge.counting .cd{visibility:visible}
+  #gauge.counting .ring-text{visibility:hidden}
+  .cd-label{font-size:2.6cqh;letter-spacing:.35em;padding-left:.35em;color:#ffc2c2;margin-bottom:.5cqh}
+  .cd-num{font-size:24cqh;line-height:1}
+  .cd-num.pop{animation:pop 1s cubic-bezier(.2,.9,.3,1.2) forwards}
+  .cd-num.go{font-size:15cqh;animation:goPop .8s cubic-bezier(.2,.9,.3,1.4) forwards}
+  @keyframes pop{0%{opacity:0;transform:skewX(-10deg) scale(2.4)}18%{opacity:1;transform:skewX(-10deg) scale(.92)}30%{transform:skewX(-10deg) scale(1)}85%{opacity:1}100%{opacity:0;transform:skewX(-10deg) scale(.7)}}
+  @keyframes goPop{0%{opacity:0;transform:skewX(-10deg) scale(3)}35%{opacity:1;transform:skewX(-10deg) scale(.9) rotate(-3deg)}55%{transform:skewX(-10deg) scale(1.08) rotate(2deg)}100%{opacity:1;transform:skewX(-10deg) scale(1)}}
+  .ring-wrap.beat{animation:beat .5s ease-out}
+  @keyframes beat{0%{transform:translate(-50%,-50%) scale(1.07)}100%{transform:translate(-50%,-50%) scale(1)}}
+  #gauge.counting .tick{stroke:rgba(255,255,255,.5)}
+  #gauge.counting .ring-wrap.beat .tick{stroke:#fff;filter:drop-shadow(0 0 1.4px #fff)}
+  .cd-flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 69%,rgba(255,60,60,.45),transparent 45%);opacity:0;pointer-events:none}
+  .cd-flash.on{animation:cdf .6s ease-out}
+  @keyframes cdf{0%{opacity:1}100%{opacity:0}}
+
   #flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:40}
   #flash.go{animation:blink .9s steps(1,end) forwards}
   @keyframes blink{0%{opacity:1}14%{opacity:0}28%{opacity:1}42%{opacity:0}56%{opacity:1}100%{opacity:1}}
@@ -123,7 +141,7 @@
   <button data-tab="qr" class="on">QR code</button>
   <button data-tab="gauge">Gauge</button>
   <button data-tab="finish">Finish</button>
-  <button class="start" id="startBtn">Start 60s</button>
+  <button class="start" id="startBtn">Start</button>
 </nav>
 
 <div class="backdrop" aria-hidden="true"></div>
@@ -145,6 +163,7 @@
 
   <!-- TAB 2: GAUGE -->
   <section class="layer" id="gauge">
+    <div class="cd-flash" id="cdFlash"></div>
     <div class="ring-wrap">
       <div class="disc"></div>
       <svg viewBox="0 0 100 100" id="ring" aria-hidden="true"></svg>
@@ -153,6 +172,7 @@
         <div class="rt-pct"><span id="pct">0</span>%</div>
         <div class="rt-count" id="countLine"><b id="count">0</b> agents ready</div>
       </div>
+      <div class="cd"><div class="cd-label" id="cdLabel">GET READY</div><div class="cd-num hl" id="cdNum">5</div></div>
     </div>
   </section>
 
@@ -173,6 +193,8 @@
 const CONFIG = {
   PHONE_URL: "",          // link of ready.html. Leave empty if it sits next to this file online
   DURATION_SECONDS: 60,   // gauge always reaches 100% after this
+  COUNTDOWN_FROM: 5,      // countdown before loading starts (0 = no countdown)
+  COUNTDOWN_SOUND: true,  // beep on each number, long tone on GO!
   SHOW_AGENT_COUNT: true, // fake "agents ready" counter
   FAKE_TOTAL_AGENTS: 3500 // number the counter climbs to
 };
@@ -250,8 +272,34 @@ function progressAt(sec){
   const x = Math.min(1, sec / CONFIG.DURATION_SECONDS);
   return Math.min(1, x + 0.018 * Math.sin(x * Math.PI * 7) * (1 - x));
 }
+let cdTimers = [], audio = null;
+function beep(freq, dur){
+  if(!CONFIG.COUNTDOWN_SOUND) return;
+  try{
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    const o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime;
+    o.type = "square"; o.frequency.value = freq; o.connect(g); g.connect(audio.destination);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.25, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur); o.start(t); o.stop(t + dur + 0.05);
+  }catch(e){}
+}
+function showCount(text, isGo){
+  const n = $("cdNum"), w = document.querySelector(".ring-wrap"), f = $("cdFlash");
+  n.textContent = text; n.className = "cd-num hl"; w.classList.remove("beat"); f.classList.remove("on");
+  void n.offsetWidth; n.classList.add(isGo ? "go" : "pop"); w.classList.add("beat"); f.classList.add("on");
+  $("cdLabel").textContent = isGo ? "TAP READY NOW!" : "GET READY";
+  beep(isGo ? 880 : 440, isGo ? 0.7 : 0.18);
+}
 function startRun(){
   stopRun(); showTab("gauge"); $("gauge").classList.remove("done");
+  const from = Math.max(0, CONFIG.COUNTDOWN_FROM | 0);
+  if(from === 0){ startLoading(); return; }
+  $("gauge").classList.add("counting");
+  for(let i = 0; i < from; i++) cdTimers.push(setTimeout(() => showCount(String(from - i)), i * 1000));
+  cdTimers.push(setTimeout(() => showCount("GO!", true), from * 1000));
+  cdTimers.push(setTimeout(() => { $("gauge").classList.remove("counting"); startLoading(); }, from * 1000 + 900));
+}
+function startLoading(){
   running = true; startT = performance.now(); let best = 0;
   const loop = now => {
     if(!running) return;
@@ -269,6 +317,7 @@ function finish(){
   }, 700);
 }
 function stopRun(){
+  cdTimers.forEach(clearTimeout); cdTimers = []; $("gauge").classList.remove("counting");
   running = false; cancelAnimationFrame(raf); clearTimeout(timer);
   $("flash").className = ""; $("gauge").classList.remove("done"); render(0);
 }
